@@ -4,7 +4,7 @@ import { IDetectedLanguage } from "../../models/IDetectedLanguage";
 
 export interface ITranslationBarState {
   availableLanguages: IContextualMenuItem[];
-  selectedLanguage: ILanguage;
+  selectedLanguage?: ILanguage;
   pageItem: any;
   isLoading: boolean;
   isTranslating: boolean;

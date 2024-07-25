@@ -10,6 +10,7 @@ import { TranslationBar } from "../components/TranslationBar";
 import { ITranslationBarProps } from "../components/ITranslationBarProps";
 import { ITranslationService } from "../../services/ITranslationService";
 import { TranslationService } from "../../services/TranslationService";
+import { ILanguage } from "../../models/ILanguage";
 
 export interface IMachineTranslationExtensionApplicationCustomizerProperties {
   // Check supported languages: https://docs.microsoft.com/en-us/azure/cognitive-services/translator/language-support
@@ -24,11 +25,14 @@ export default class MachineTranslationExtensionApplicationCustomizer
   extends BaseApplicationCustomizer<IMachineTranslationExtensionApplicationCustomizerProperties> {
 
   private _topPlaceholder: PlaceholderContent | undefined;
+  private _installedLanguages: ILanguage[];
 
   @override
-  public onInit(): Promise<void> {
+  public async onInit(): Promise<void> {
 
     sp.setup(this.context);
+    const installedLanguages = await sp.web.regionalSettings.getInstalledLanguages();
+    this._installedLanguages = installedLanguages.map(v => ({ code: v.LanguageTag, label: v.DisplayName }));
 
     // Added to handle possible changes on the existence of placeholders.
     this.context.placeholderProvider.changedEvent.add(this, this._renderPlaceHolders);
@@ -69,7 +73,7 @@ export default class MachineTranslationExtensionApplicationCustomizer
           this.properties.regionSpecifier);
 
       const props: ITranslationBarProps = {
-        supportedLanguages: this.properties.supportedLanguages,
+        supportedLanguages: this._installedLanguages,
         currentPageId: this.context.pageContext.listItem.id,
         currentListId: this.context.pageContext.list.id.toString(),
         currentWebUrl: this.context.pageContext.web.serverRelativeUrl,
@@ -91,7 +95,7 @@ export default class MachineTranslationExtensionApplicationCustomizer
           this.properties.regionSpecifier);
 
       const props: ITranslationBarProps = {
-        supportedLanguages: this.properties.supportedLanguages,
+        supportedLanguages: this._installedLanguages,
         currentPageId: this.context.pageContext.listItem.id,
         currentListId: this.context.pageContext.list.id.toString(),
         currentWebUrl: this.context.pageContext.web.serverRelativeUrl,

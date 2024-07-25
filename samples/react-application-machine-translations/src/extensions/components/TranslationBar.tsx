@@ -76,6 +76,7 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
       );
     }
 
+    /*
     if (!selectedLanguage) {
       return (
         <div className={styles.translationBar}>
@@ -85,6 +86,7 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
         </div>
       );
     }
+    */
 
     let currentMenuItems = [...availableLanguages];
     if (currentMenuItems.length <= 0) {
@@ -101,7 +103,7 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
       <div className={styles.translationBar}>
         <ActionButton
           className={styles.actionButton}
-          text={this.state.selectedLanguage.label}
+          text={selectedLanguage ? selectedLanguage.label : "Choose the language"}
           iconProps={{ iconName: "Globe" }}
           menuProps={{
             shouldFocusOnMount: true,
@@ -135,20 +137,26 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
   private _initTranslationBar = async (): Promise<void> => {
     try {
       const pageItem = await this._getPageItem();
-      const textToDetect = pageItem["Description"] ? pageItem["Description"] : pageItem["Title"];
+      //const textToDetect = pageItem["Description"] ? pageItem["Description"] : pageItem["Title"];
 
-      const detectedLanguage = await this._detectLanguage(textToDetect);
-      const availableLanguages = await this._getAvailableLanguages(detectedLanguage);
-      let selectedLanguage: ILanguage = undefined;
+      //const detectedLanguage = await this._detectLanguage(textToDetect);
+      const availableLanguages = this.props.supportedLanguages
+        .map<IContextualMenuItem>(language => ({
+          key: language.code,
+          text: language.label,
+          onClick: () => this._onTranslate(language)
+        }));
 
+      /*
       if (availableLanguages.some((l: IContextualMenuItem) => l.key === detectedLanguage.language)) {
         const selectedLanguageMenuItem = availableLanguages.filter((l: IContextualMenuItem) => l.key === detectedLanguage.language)[0];
         selectedLanguage = { label: selectedLanguageMenuItem.name, code: selectedLanguageMenuItem.key };
       }
+      */
 
       this.setState({
         availableLanguages,
-        selectedLanguage,
+        selectedLanguage: undefined,
         pageItem,
         isLoading: false,
         isTranslated: false,
@@ -179,6 +187,8 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
   private _detectLanguage = async (text: string): Promise<IDetectedLanguage> => {
     return await this.props.translationService.detectLanguage(text);
   }
+
+  /*
   private _getAvailableLanguages = async (detectedLanguage: IDetectedLanguage): Promise<IContextualMenuItem[]> => {
     return (await this.props.translationService.getAvailableLanguages(this.props.supportedLanguages))
       .map((language: ILanguage) => {
@@ -192,6 +202,7 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
         };
       });
   }
+  */
 
   private _updateSelectedLanguage = (selectedLanguage: ILanguage): void => {
     const availableLanguages: IContextualMenuItem[] = [...this.state.availableLanguages].map((item: IContextualMenuItem) => {
@@ -211,11 +222,13 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
 
     const relativePageUrl: string = `${this.props.currentWebUrl}/SitePages/${this.state.pageItem["FileLeafRef"]}`;
 
-    sp.web.loadClientsidePage(relativePageUrl).then( async (clientSidePage: IClientsidePage) => {
+    sp.web.loadClientsidePage(relativePageUrl).then(async (clientSidePage: IClientsidePage) => {
 
       try {
         // Translate title
-        await this._translatePageTitle(clientSidePage.title, language.code);
+        // For unknown reason sometimes title cannot be read directly from clientSidePage object
+        const title = ((await clientSidePage.getItem('Title')) as { Title: string }).Title;
+        await this._translatePageTitle(title, language.code);
 
         // Get all text controls
         var textControls: ColumnControl<any>[] = [];
@@ -241,13 +254,18 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
       this.setState({ isTranslating: false, globalError: error.message });
     });
   }
-  private _translatePageTitle = async (title: string, languageCode): Promise<void> => {
+  private _translatePageTitle = async (title: string, languageCode: string): Promise<void> => {
     const translationResult: ITranslationResult = await this.props.translationService.translate(title, languageCode, false);
 
     // get the title element
-    const pageTitle: Element = document.querySelector("div[data-automation-id='pageHeader'] div[role='heading']");
+    // const pageTitle: Element = document.querySelector("div[data-automation-id='pageHeader'] div[role='heading']");
+
+    const pageTitle: Element = document.querySelector("div[id='title_text']");
+
     if (pageTitle) {
       pageTitle.textContent = translationResult.translations[0].text;
+    } else {
+      console.log("Page title element could not have been found.");
     }
   }
   private _translateTextControl = async (textControl: ClientsideText, languageCode: string): Promise<void> => {

@@ -1,7 +1,8 @@
+import { ILanguage } from "../../models/ILanguage";
 import { ITranslationService } from "../../services/ITranslationService";
 
 export interface ITranslationBarProps {
-  supportedLanguages: string[];
+  supportedLanguages: ILanguage[];
   currentPageId: number;
   currentListId: string;
   currentWebUrl: string;
