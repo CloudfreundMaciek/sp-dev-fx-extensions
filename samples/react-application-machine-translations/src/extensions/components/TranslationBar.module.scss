@@ -1,13 +1,15 @@
 .translationBar{
   background-color: "[theme:themePrimary, default:#0078d7]";
   color: "[theme:white, default:white]";
+  display: flex;
 
   .loadingButton {
     line-height: 40px;
     padding-left: 16px;
   }
   .actionButton, .actionButton:hover {
-    margin-left: 8px;
+    margin-right: 0px;
+    margin-left: auto;
     color: "[theme:white, default:white]";
     i {
       color: "[theme:white, default:white]";

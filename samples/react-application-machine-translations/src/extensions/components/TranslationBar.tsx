@@ -101,6 +101,21 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
 
     return (
       <div className={styles.translationBar}>
+        {this.state.isTranslated && (
+          <MessageBar messageBarType={MessageBarType.warning}>
+            <span>
+              Please be aware that the content on this page is translated by the Microsoft Translator Text API to provide a basic understanding of the content.
+              It is a literal translation and certain words may not translate accurately....
+            </span>
+          </MessageBar>
+        )}
+         {this.state.isTranslated && (
+          <ActionButton
+            className={styles.actionButton}
+            text={"Reload original"}
+            onClick={() => this._onReloadOriginal()}
+          />
+        )}
         <ActionButton
           className={styles.actionButton}
           text={selectedLanguage ? selectedLanguage.label : "Choose the language"}
@@ -110,21 +125,6 @@ export class TranslationBar extends React.Component<ITranslationBarProps, ITrans
             items: currentMenuItems
           }}
         />
-        {this.state.isTranslated && (
-          <ActionButton
-            className={styles.actionButton}
-            text={"Reload original"}
-            onClick={() => this._onReloadOriginal()}
-          />
-        )}
-        {this.state.isTranslated && (
-          <MessageBar messageBarType={MessageBarType.warning}>
-            <span>
-              Please be aware that the content on this page is translated by the Microsoft Translator Text API to provide a basic understanding of the content.
-              It is a literal translation and certain words may not translate accurately....
-            </span>
-          </MessageBar>
-        )}
         {this.state.isTranslating && (
           <Layer>
             <Overlay isDarkThemed={true} />
