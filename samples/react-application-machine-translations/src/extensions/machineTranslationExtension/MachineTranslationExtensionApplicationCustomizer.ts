@@ -32,7 +32,11 @@ export default class MachineTranslationExtensionApplicationCustomizer
 
     sp.setup(this.context);
     const installedLanguages = await sp.web.regionalSettings.getInstalledLanguages();
-    this._installedLanguages = installedLanguages.map(v => ({ code: v.LanguageTag, label: v.DisplayName }));
+    this._installedLanguages = (
+      installedLanguages
+        .map(lang => ({ code: lang.LanguageTag, label: lang.DisplayName }))
+        .sort((lang1, lang2) => lang1.label.localeCompare(lang2.label))
+    );
 
     // Added to handle possible changes on the existence of placeholders.
     this.context.placeholderProvider.changedEvent.add(this, this._renderPlaceHolders);
