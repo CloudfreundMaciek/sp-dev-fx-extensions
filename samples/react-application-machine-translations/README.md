@@ -79,7 +79,7 @@ Here's a debug URL for testing around this sample (global translator resource).
 Here's a debug URL for testing around this sample (regional translator resource).
 
 ```
-?debugManifestsFile=https://localhost:4321/temp/manifests.js&loadSPFX=true&customActions={"aa40cc51-6498-4c01-91d4-b5f8d2fe1e8b":{"location":"ClientSideExtension.ApplicationCustomizer","properties":{"supportedLanguages":["en","nl","fr"],"translatorApiKey":"_TRANSLATOR_API_KEY_","translatorApiRegion":"_TRANSLATOR_API_REGION_"}}}
+?debugManifestsFile=https://localhost:4321/temp/manifests.js&loadSPFX=true&customActions={"aa40cc51-6498-4c01-91d4-b5f8d2fe1e8b":{"location":"ClientSideExtension.ApplicationCustomizer","properties":{"translatorApiKey":"3cd1b68e17da454dbbcb3720bc23d7ae","translatorApiRegion":"westeurope"}}}
 ```
 - Replace \_TRANSLATOR_API_REGION_ with the region of the translator resource eg.: "westeurope", "eastus", "eastasia" etc.
 
