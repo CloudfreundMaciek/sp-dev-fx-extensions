@@ -51,9 +51,8 @@ export class TranslationService implements ITranslationService {
     }
 
     const translatorLanguages: IDictionary<ITranslatorLanguage> = (await result.json()).dictionary;
-    const languages: ILanguage[] = Object.keys(translatorLanguages).map(v => ({ label: translatorLanguages[v].nativeName, code: v}));
-
-    console.log(languages)
+    const languageNames: string[] = Object.keys(translatorLanguages);
+    const languages: ILanguage[] = languageNames.map(lang => ({ label: translatorLanguages[lang].nativeName, code: lang}));
 
     return languages;
   }
